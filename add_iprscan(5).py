@@ -8,7 +8,7 @@ collection = db.genes
 time = datetime.datetime.now()
 
 go_dict = {}
-with open("go_slim.txt", "r") as go_in:
+with open("/Users/burkej24/Desktop/chia_database/go_slim.txt", "r") as go_in:
     go_in.readline()
     go_in.readline ( )
     go_in.readline ( )
@@ -23,24 +23,42 @@ with open("go_slim.txt", "r") as go_in:
         temp_dict["go_dbxref"] = "TAIR:" + line[0]
         go_dict[line[5]] = temp_dict
 print("dictionary created")
-
+go_not_found = 0
 count = 0
 with open ( "/Users/burkej24/Desktop/chia_database/chia.working_models.pep.tsv" , "r" ) as in_tsv :
-    for line in in_tsv :
-        line = line.rstrip().split()
+    line = in_tsv.readline().rstrip().split("\t")
+    while line :
         gene = line[0]
         ipr_list = []
+        go_list = []
         while line[0] == gene:
+            print(count)
             if len(line) == 11:
                 data = {"method": line[3], "method_accession": line[4], "method_description": line[5], "match_start": line[6],
                         "match_end": line[7], "evalue":line[8], "interpro_accession": "N/A", "interpro_description": "N/A", "interpro_go": "N/A"}
+                ipr_list.append(data)
             elif len(line) == 13:
                 data = { "method" : line [3] , "method_accession" : line [4] , "method_description" : line [5] ,
                          "match_start" : line [6] ,
-                         "match_end" : line [7] , "evalue" : line [8] , "interpro_accession" : line[12] ,
-                         "interpro_description" : line[13] , "interpro_go" : "N/A" }
+                         "match_end" : line [7] , "evalue" : line [8] , "interpro_accession" : line[11] ,
+                         "interpro_description" : line[12] , "interpro_go" : "N/A" }
+                ipr_list.append(data)
             elif len(line) == 14:
+                try:
+                    go_terms = line[13].rstrip().split("|")
+                    for item in go_terms:
+                        go_list.append(go_dict[item])
+                except KeyError:
+                    go_not_found += 1
                 data = { "method" : line [3] , "method_accession" : line [4] , "method_description" : line [5] ,
                          "match_start" : line [6] ,
-                         "match_end" : line [7] , "evalue" : line [8] , "interpro_accession" : line [12] ,
-                         "interpro_description" : line [13] , "interpro_go" : line[14].rstrip().split("|") }
+                         "match_end" : line [7] , "evalue" : line [8] , "interpro_accession" : line [11] ,
+                         "interpro_description" : line [12] }
+                ipr_list.append(data)
+
+            collection.update_one ( { "transcript_id" : line [0] } , { "$set" : { "model_iprscan" : data, "model_go": go_list } } )
+            line = in_tsv.readline().rstrip().split("\t")
+            count += 1
+
+    print (count == 638748)
+    print (go_not_found, "go terms not found in go slim")

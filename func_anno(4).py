@@ -11,3 +11,5 @@ with open("chia.working_models.func_anno.txt") as in_func:
         for line in in_func:
             line = line.rstrip().split("\t")
             collection.update_one ( { "transcript_id" : line [0] } , { "$set" : { "func_anno" : line[1] } } )
+
+print(count == 59062)
