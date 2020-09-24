@@ -5,7 +5,7 @@ client = pymongo.MongoClient()
 db = client.chia
 collection = db.genes
 
-fp = open( "/genes.txt" , "r" )
+fp = open( "/Users/burkej24/Desktop/chia_database/genes.txt" , "r" )
 count = 0
 for line in fp:
     data = {"transcript_id": line[1:].rstrip()}
