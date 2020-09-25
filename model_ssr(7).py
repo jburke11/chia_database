@@ -6,7 +6,7 @@ client = pymongo.MongoClient()
 db = client.chia
 collection = db.genes
 ssr_dict = {}
-with open("ssr.txt", "r") as in_ssr:
+with open("ssr.tsv", "r") as in_ssr:
     for line in in_ssr:
         line = line.rstrip().split()
         data = {"end5": line[5], "end3": line[6], "unit_size": line[2], "motif": line[3], "ssr_length": line[4] }

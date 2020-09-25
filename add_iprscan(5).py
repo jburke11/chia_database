@@ -32,7 +32,7 @@ with open ( "/Users/burkej24/Desktop/chia_database/chia.working_models.pep.tsv" 
         ipr_list = []
         go_list = []
         while line[0] == gene:
-            print(count)
+            print(count, line[0])
             if len(line) == 11:
                 data = {"method": line[3], "method_accession": line[4], "method_description": line[5], "match_start": line[6],
                         "match_end": line[7], "evalue":line[8], "interpro_accession": "N/A", "interpro_description": "N/A", "interpro_go": "N/A"}
