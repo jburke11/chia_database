@@ -13,8 +13,8 @@ with open("chia.pfam", "r") as in_pfam:
         pfam_list = []
         while line[0] == gene:
             print(line)
-            data = {"protein_match_start": line[1], "protein_match_end":line[2],"hmm_acc" : line[5], "hmm_match_start": line[8]
-                    , "hmm_name": line[6],"hmm_match_end" : line[9], "hmm_type" : line[7], "bit_score" : line[11], "evalue": line[12] }
+            data = {"protein_match_start": line[1], "protein_match_end":line[2],"hmm_acc" : line[5], "hmm_match_start": int(line[8])
+                    , "hmm_name": line[6],"hmm_match_end" : int(line[9]), "hmm_type" : line[7], "bit_score" : line[11], "evalue": line[12] }
             pfam_list.append(data)
             line = in_pfam.readline ( ).rstrip ( ).split ()
             print(x)

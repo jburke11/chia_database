@@ -11,5 +11,4 @@ for line in fp:
     data = {"transcript_id": line[1:].rstrip()}
     collection.insert_one(data)
     count += 1
-    print("Gene inserted")
 print(59062 == count)

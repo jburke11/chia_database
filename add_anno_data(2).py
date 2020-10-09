@@ -33,13 +33,13 @@ with open("/Users/burkej24/Desktop/chia_database/chia.working_models.gff3") as i
             if transcript_id in hc_models:
                 collection.update_one ( { "transcript_id" : transcript_id } ,
                                         { "$set" : { "scaffold" : scaffold , "origin" : origin , \
-                                                     "start" : start , "stop" : stop , "description" : description , \
+                                                     "start" : int(start) , "stop" : int(stop) , "description" : description , \
                                                      "gene_id" : gene_id, "hc": 1 } } )
                 count += 1
                 print("updated document", transcript_id)
             else:
                 collection.update_one({"transcript_id": transcript_id},{"$set": {"scaffold": scaffold, "origin": origin, \
-                                                                    "start": start, "stop": stop, "description": description,\
+                                                                    "start": int(start), "stop": int(stop), "description": description,\
                                                                     "gene_id": gene_id, "hc": 0}})
                 print("updated document", transcript_id)
                 count += 1

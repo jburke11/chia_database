@@ -34,13 +34,13 @@ with open ( "/Users/burkej24/Desktop/chia_database/chia.working_models.pep.tsv" 
         while line[0] == gene:
             print(count, line[0])
             if len(line) == 11:
-                data = {"method": line[3], "method_accession": line[4], "method_description": line[5], "match_start": line[6],
-                        "match_end": line[7], "evalue":line[8], "interpro_accession": "N/A", "interpro_description": "N/A", "interpro_go": "N/A"}
+                data = {"method": line[3], "method_accession": line[4], "method_description": line[5], "match_start": int(line[6]),
+                        "match_end": int(line[7]), "evalue":line[8], "interpro_accession": "N/A", "interpro_description": "N/A", "interpro_go": "N/A"}
                 ipr_list.append(data)
             elif len(line) == 13:
                 data = { "method" : line [3] , "method_accession" : line [4] , "method_description" : line [5] ,
-                         "match_start" : line [6] ,
-                         "match_end" : line [7] , "evalue" : line [8] , "interpro_accession" : line[11] ,
+                         "match_start" : int(line [6]) ,
+                         "match_end" : int(line [7]) , "evalue" : line [8] , "interpro_accession" : line[11] ,
                          "interpro_description" : line[12] , "interpro_go" : "N/A" }
                 ipr_list.append(data)
             elif len(line) == 14:
@@ -51,14 +51,13 @@ with open ( "/Users/burkej24/Desktop/chia_database/chia.working_models.pep.tsv" 
                 except KeyError:
                     go_not_found += 1
                 data = { "method" : line [3] , "method_accession" : line [4] , "method_description" : line [5] ,
-                         "match_start" : line [6] ,
-                         "match_end" : line [7] , "evalue" : line [8] , "interpro_accession" : line [11] ,
+                         "match_start" : int(line [6]) ,
+                         "match_end" : int(line [7]) , "evalue" : line [8] , "interpro_accession" : line [11] ,
                          "interpro_description" : line [12] }
                 ipr_list.append(data)
-
-            collection.update_one ( { "transcript_id" : line [0] } , { "$set" : { "model_iprscan" : data, "model_go": go_list } } )
             line = in_tsv.readline().rstrip().split("\t")
             count += 1
+        collection.update_one ( { "transcript_id" : line [0] } , { "$set" : { "model_iprscan" : ipr_list, "model_go": go_list } } )
 
     print (count == 638748)
     print (go_not_found, "go terms not found in go slim")
