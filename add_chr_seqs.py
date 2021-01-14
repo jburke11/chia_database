@@ -3,10 +3,10 @@ from Bio import SeqIO
 # get the client
 client = pymongo.MongoClient()
 # connect to the genes collection in the chia database
-db = client.chia
+db = client.teak
 fs = gridfs.GridFS(db)
 
-for record in SeqIO.parse("/Users/burkej24/Desktop/chia_database/chia.final_asm.fa", "fasta"):
+for record in SeqIO.parse("/Users/burkej24/Desktop/callicarpa/car_asm.fa", "fasta"):
     seq = str(record.seq)
     chr = record.id
     file = open ( chr , "w" )
