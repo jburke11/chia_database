@@ -62,7 +62,7 @@ try:
                 print ( "passed" )
                 pass
     print("annotation added")
-
+    """
 ###############################################
     #start is repr
     count = 0
@@ -74,8 +74,8 @@ try:
             count += 1
     if count != 31168 :
         raise TimeoutError
+    collection.update_many({"is_repr": 0}, {"$set": {"is_repr": 0}})
     print("representative transcripts flagged")
-    """
     """
 ##############################################
     # start func anno
@@ -88,7 +88,6 @@ try:
 ##############################################
 
     # start iprscan
-
     go_dict = {}
     with open("/Users/burkej24/Desktop/chia_database/go_slim.txt", "r") as go_in:
         go_in.readline()
@@ -107,7 +106,7 @@ try:
     print("dictionary created")
     go_not_found = 0
     count = 0
-    with open ( "/Users/burkej24/Desktop/teak/teak_data/teak.working_models.pep.tsv" , "r" ) as in_tsv :
+    with open ( "/Users/burkej24/Desktop/teak/teak_data/teak.pep.fa.tsv" , "r" ) as in_tsv :
         line = in_tsv.readline().rstrip().split("\t")
         while line :
             gene = line[0]
@@ -143,7 +142,6 @@ try:
 
         print (count == 638748)
         print (go_not_found, "go terms not found in go slim")
-
     #############################################################
     # add in the sequences
     cds = 0
@@ -175,8 +173,12 @@ try:
                      "motif" : line [3] , "ssr_length" : int ( line [4] ) , "scaffold" : line [0] }
             collection.insert_one ( data )
     print ("ssrs added")
+    """
+    """
 #########################################
 # add in the diamond analysis
+    """
+    """
     collection = db.genes
     with open ( "/Users/burkej24/Desktop/teak/teak_data/diamond_results_teak.tsv" , "r" ) as in_file :
         line = in_file.readline ( ).rstrip ( ).split ( "\t" )
@@ -197,7 +199,7 @@ try:
     print("diamond analysis added")
 #######################################
 # add in pfam
-    """
+    
     x = 0
     with open("/Users/burkej24/Desktop/teak/teak_data/teak_pfam.tsv", "r") as in_pfam:
         line = in_pfam.readline( ).rstrip( ).split ("\t")
@@ -215,6 +217,7 @@ try:
                 x+=1
             collection.update_one ( { "transcript_id" : gene } , { "$set" : { "model_pfam" : pfam_list } } )
     print("pfam added")
+    """
     print("pipeline done")
 except IndexError:
     print("error loading transcript Ids")

@@ -1,28 +1,30 @@
 import pymongo
 from Bio import SeqIO
+
 # get the client
-client = pymongo.MongoClient()
+client = pymongo.MongoClient ( )
 # connect to the genes collection in the teak database
-db = client.callicarpa
+db = client.officinalis
 collection = db.genes
-try:
+try :
     """
-    fp = open( "/Users/burkej24/Desktop/callicarpa/car.working_models.func_anno.txt" , "r" )
+    fp = open( "/Users/burkej24/Desktop/catnip/catnip_data/officinalis/h_officinalis.working.gene_models.functional_annotation.txt" , "r" )
     count = 0
     for line in fp:
         line = line.rstrip().split("\t")
         data = {"transcript_id": line[0].rstrip()}
         collection.insert_one(data)
         count += 1
-    if 67826 == count:
+    if 61330 == count:
         print ( "transcript IDs loaded" )
     else:
         raise SystemError
 
     ############
-    #start annotation data entry
+    # start annotation data entry, run again
+
     hc_models = []
-    with open ( "/Users/burkej24/Desktop/callicarpa/car.hc_gene_models.gff3" ) as hc_gff :
+    with open ( "/Users/burkej24/Desktop/catnip/catnip_data/officinalis/h_officinalis.hc.gene_models.txt" ) as hc_gff :
         for line in hc_gff :
             lst = line.rstrip ( ).split ("\t")
             if len(lst) > 1 and lst [2] == "mRNA" :
@@ -32,7 +34,7 @@ try:
                 hc_models.append ( transcript_id )
 
     count = 0
-    with open ( "/Users/burkej24/Desktop/callicarpa/car.working_models.gff3" ) as in_gff :
+    with open ( "/Users/burkej24/Desktop/catnip/catnip_data/officinalis/h_officinalis.working.gene_models.gff3" ) as in_gff :
         for line in in_gff :
             lst = line.rstrip ( ).split ("\t" )
             if len(lst) > 1 and lst [2] == "mRNA" :
@@ -43,7 +45,7 @@ try:
                 description = lst [-1]
                 desc_list = description.split ( ";" )
                 transcript_id = desc_list [0].split ( "=" ) [-1]
-                gene_id = desc_list [2].split ( "=" ) [-1]
+                gene_id = desc_list [1].split ( "=" ) [-1]
                 if transcript_id in hc_models :
                     collection.update_one ( { "transcript_id" : transcript_id } ,
                                             { "$set" : { "scaffold" : scaffold , "origin" : origin , \
@@ -64,12 +66,13 @@ try:
                 print ( "passed" )
                 pass
     print("annotation added")
-
 ###############################################
     #start is repr
 
+    collection.update_many({}, {"$set": {"is_repr": 0}})
+    '''
     count = 0
-    with open ( "/Users/burkej24/Desktop/callicarpa/car.hc_gene_models.repr.gene_model.list.txt" ) as in_genes :
+    with open ( "/Users/burkej24/Desktop/catnip/catnip_data/officinalis/n_officinalis.hc.gene_models.txt" ) as in_genes :
         for line in in_genes :
             line = line.rstrip()
             print(line)
@@ -78,18 +81,20 @@ try:
     if count != 32164 :
         raise TimeoutError
     print("representative transcripts flagged")
-
+    '''
 ##############################################
     # start func anno
-    with open ( "/Users/burkej24/Desktop/callicarpa/car.working_models.func_anno.txt" ) as in_func :
+    with open ( "/Users/burkej24/Desktop/catnip/catnip_data/officinalis/h_officinalis.working.gene_models.functional_annotation.txt" ) as in_func :
         collection.update_many({}, { "$set" : { "func_anno" : " " }})
         for line in in_func :
             line = line.rstrip().split("\t")
             collection.update_one ( { "transcript_id" : line [0] } , { "$set" : { "func_anno" : line[1] } } )
     print("functional annotation added")
-##############################################
-    """
+
+    ##############################################
+
     # start iprscan
+    """
     """
     go_dict = {}
     with open("/Users/burkej24/Desktop/chia_database/go_slim.txt", "r") as go_in:
@@ -109,71 +114,72 @@ try:
     print("dictionary created")
     go_not_found = 0
     count = 0
-    with open ( "/Users/burkej24/Desktop/callicarpa/car.hc_gene_models.repr.iprscan.txt" , "r" ) as in_tsv :
-        line = in_tsv.readline ( ).rstrip ( ).split ( "\t" )
-        while len ( line ) > 1 :
-            gene = line [0]
+    with open ( "/Users/burkej24/Desktop/catnip/catnip_data/officinalis/officinalis.pep.fa.tsv" , "r" ) as in_tsv :
+        line = in_tsv.readline().rstrip().split("\t")
+        while len(line) >1 :
+            gene = line[0]
             ipr_list = []
             go_list = []
-            while line [0] == gene and len ( line ) > 1 :
-                if len ( line ) == 11 :
+            while line[0] == gene and len(line) > 1:
+                if len(line) == 11:
+                    data = {"method": line[3], "method_accession": line[4], "method_description": line[5], "match_start": int(line[6]),
+                            "match_end": int(line[7]), "evalue":line[8], "interpro_accession": "N/A", "interpro_description": "N/A", "interpro_go": "N/A"}
+                    ipr_list.append(data)
+                elif len(line) == 13:
                     data = { "method" : line [3] , "method_accession" : line [4] , "method_description" : line [5] ,
-                             "match_start" : int ( line [6] ) ,
-                             "match_end" : int ( line [7] ) , "evalue" : line [8] , "interpro_accession" : "N/A" ,
-                             "interpro_description" : "N/A" , "interpro_go" : "N/A" }
-                    ipr_list.append ( data )
-                elif len ( line ) == 13 :
-                    data = { "method" : line [3] , "method_accession" : line [4] , "method_description" : line [5] ,
-                             "match_start" : int ( line [6] ) ,
-                             "match_end" : int ( line [7] ) , "evalue" : line [8] , "interpro_accession" : line [11] ,
-                             "interpro_description" : line [12] , "interpro_go" : "N/A" }
-                    ipr_list.append ( data )
-                elif len ( line ) == 14 :
-                    try :
-                        go_terms = line [13].rstrip ( ).split ( "|" )
-                        for item in go_terms :
-                            go_list.append ( go_dict [item] )
-                    except KeyError :
+                             "match_start" : int(line [6]) ,
+                             "match_end" : int(line [7]) , "evalue" : line [8] , "interpro_accession" : line[11] ,
+                             "interpro_description" : line[12] , "interpro_go" : "N/A" }
+                    ipr_list.append(data)
+                elif len(line) == 14:
+                    try:
+                        go_terms = line[13].rstrip().split("|")
+                        for item in go_terms:
+                            go_list.append(go_dict[item])
+                    except KeyError:
                         go_not_found += 1
                     data = { "method" : line [3] , "method_accession" : line [4] , "method_description" : line [5] ,
-                             "match_start" : int ( line [6] ) ,
-                             "match_end" : int ( line [7] ) , "evalue" : line [8] , "interpro_accession" : line [11] ,
+                             "match_start" : int(line [6]) ,
+                             "match_end" : int(line [7]) , "evalue" : line [8] , "interpro_accession" : line [11] ,
                              "interpro_description" : line [12] }
-                    ipr_list.append ( data )
-                line = in_tsv.readline ( ).rstrip ( ).split ( "\t" )
+                    ipr_list.append(data)
+                line = in_tsv.readline().rstrip().split("\t")
                 count += 1
-            collection.update_one ( { "transcript_id" : line [0] } ,
-                                    { "$set" : { "model_iprscan" : ipr_list , "model_go" : go_list } } )
-        print ( count )
-        print ( go_not_found , "go terms not found in go slim" )
-        
+            collection.update_one ( { "transcript_id" : line [0] } , { "$set" : { "model_iprscan" : ipr_list, "model_go": go_list } } )
+        print(count)
+        print (go_not_found, "go terms not found in go slim")
+
+
     #############################################################
     # add in the sequences
-    """
-    """
     cds = 0
-    cdna = 0
-    pep = 0
 
-    for record in SeqIO.parse ( "/Users/burkej24/Desktop/callicarpa/car.working_models.cds.fa" , "fasta" ) :
+    for record in SeqIO.parse ( "/Users/burkej24/Desktop/catnip/catnip_data/officinalis/officinalis.cds.fa" , "fasta" ) :
         collection.update_one ( { "transcript_id" : record.id } , { "$set" : { "cds" : str ( record.seq ) } } )
         cds += 1
-    print ( cds == 67826 )
-
-    for record in SeqIO.parse ( "/Users/burkej24/Desktop/callicarpa/car.working_models.cdna.fa" , "fasta" ) :
+    print ( cds == 61330)
+    """
+    """
+    cdna = 0
+    pep = 0
+    for record in SeqIO.parse ( "/Users/burkej24/Desktop/catnip/catnip_data/officinalis/officinalis.cdna.fa" , "fasta" ) :
         collection.update_one ( { "transcript_id" : record.id } , { "$set" : { "cdna" : str ( record.seq ) } } )
         cdna += 1
-    print ( cdna == 67826 )
-    for record in SeqIO.parse ( "/Users/burkej24/Desktop/callicarpa/car.working_models.pep.fa" , "fasta" ) :
+    print ( cdna == 61330 )
+
+
+    for record in SeqIO.parse ( "/Users/burkej24/Desktop/catnip/catnip_data/officinalis/officinalis.pep.fa" , "fasta" ) :
         collection.update_one ( { "transcript_id" : record.id } , { "$set" : { "protein" : str ( record.seq ) } } )
         pep += 1
-    print ( pep == 67826 )
+    print ( pep == 61330 )
     print("sequences added")
-#########################################
-# add in the ssrs
+
+    #########################################
+    # add in the ssrs
+
     ssr_dict = { }
     collection = db.ssr
-    with open ( "/Users/burkej24/Desktop/callicarpa/car_ssr.tsv" , "r" ) as in_ssr :
+    with open ( "/Users/burkej24/Desktop/catnip/catnip_data/officinalis/officinalis_ssr.tsv" , "r" ) as in_ssr :
         for line in in_ssr :
             line = line.rstrip ( ).split ( )
             data = { "end5" : int ( line [5] ) , "end3" : int ( line [6] ) , "unit_size" : int ( line [2] ) ,
@@ -181,11 +187,10 @@ try:
             collection.insert_one ( data )
     print ("ssrs added")
 
-#########################################
-# add in the diamond analysis
-
+    #########################################
+    # add in the diamond analysis
     collection = db.genes
-    with open ( "/Users/burkej24/Desktop/callicarpa/diamond_results_title.txt" , "r" ) as in_file :
+    with open ( "/Users/burkej24/Desktop/catnip/catnip_data/officinalis/diamond_results_title.txt" , "r" ) as in_file :
         line = in_file.readline ( ).rstrip ( ).split ( "\t" )
         while line :
             gene = line [0]
@@ -204,31 +209,28 @@ try:
     print("diamond analysis added")
 #######################################
 # add in pfam
-"""
+    """
     x = 0
-    with open("/Users/burkej24/Desktop/callicarpa/callicarpa_pfam.tsv", "r") as in_pfam:
-        line = in_pfam.readline( ).rstrip( ).split ("\t")
-        print(line)
-        while line:
-            gene = line[3]
+    with open ( "/Users/burkej24/Desktop/catnip/catnip_data/officinalis/officinalis_pfam.tsv" , "r" ) as in_pfam :
+        line = in_pfam.readline ( ).rstrip ( ).split ( "\t" )
+        while line :
+            gene = line [3]
             pfam_list = []
-            while line[3] == gene:
-
-                data = {"protein_match_start": int(line[17]), "protein_match_end":int(line[18]),"hmm_acc" : line[1], "hmm_match_start": int(line[15])
-                        , "hmm_name": line[-1],"hmm_match_end" : int(line[16]), "hmm_type" : "Domain", "bit_score" : line[7], "evalue": line[6] }
-                pfam_list.append(data)
-                line = in_pfam.readline ( ).rstrip ( ).split ("\t")
-                print(x)
-                x+=1
+            while line [3] == gene :
+                data = { "protein_match_start" : int ( line [17] ) , "protein_match_end" : int ( line [18] ) ,
+                         "hmm_acc" : line [1] , "hmm_match_start" : int ( line [15] )
+                    , "hmm_name" : line [-1] , "hmm_match_end" : int ( line [16] ) , "hmm_type" : "Domain" ,
+                         "bit_score" : line [7] , "evalue" : line [6] }
+                pfam_list.append ( data )
+                line = in_pfam.readline ( ).rstrip ( ).split ( "\t" )
+                print ( x )
+                x += 1
             collection.update_one ( { "transcript_id" : gene } , { "$set" : { "model_pfam" : pfam_list } } )
-    print("pfam added")
-    collection.update_many({"model_pfam": {"$exists": 0}}, {"$set": {"model_pfam": []}})
-    collection.update_many ( { "model_go" : { "$exists" : 0 } } , { "$set" : { "model_go" : [] } } )
-    collection.update_many ( { "model_iprscan" : { "$exists" : 0 } } , { "$set" : { "model_iprscan" : [] } } )
-    collection.update_many ( { "diamond_results" : { "$exists" : 0 } } , { "$set" : { "diamond_results" : [] } } )
-    print("pipeline done")
-except SystemError:
-    print("error loading transcript Ids")
 
-except TimeoutError:
-    print("error loading repr")
+    print ( "pfam added" )
+    print ( "pipeline done" )
+except SystemError :
+    print ( "error loading transcript Ids" )
+
+except TimeoutError :
+    print ( "error loading repr" )

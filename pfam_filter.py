@@ -1,5 +1,5 @@
-with open("/Users/burkej24/Desktop/catnip/catnip_data/cataria/cataria.pfam", "r") as teak_pfam_in:
-    fp = open("/Users/burkej24/Desktop/catnip/catnip_data/cataria/cataria_pfam.tsv", "w")
+with open("/Users/burkej24/Desktop/catnip/catnip_data/officinalis/officinalis.pfam", "r") as teak_pfam_in:
+    fp = open("/Users/burkej24/Desktop/catnip/catnip_data/officinalis/officinalis_pfam.tsv", "w")
     teak_pfam_in.readline()
     teak_pfam_in.readline ( )
     teak_pfam_in.readline ( )
