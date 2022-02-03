@@ -5,8 +5,7 @@ client = pymongo.MongoClient()
 # connect to the genes collection in the teak database
 db = client.cataria
 collection = db.genes
-try:
-    """
+
     fp = open( "/Users/burkej24/Desktop/catnip/catnip_data/cataria/n_cataria.working.gene_models.functional_annotation.txt" , "r" )
     count = 0
     for line in fp:
@@ -70,8 +69,7 @@ try:
     #start is repr
     
     collection.update_many({}, {"$set": {"is_repr": 0}})
-    """
-    """
+
     count = 0
     with open ( "/Users/burkej24/Desktop/callicarpa/car.hc_gene_models.repr.gene_model.list.txt" ) as in_genes :
         for line in in_genes :
@@ -82,8 +80,7 @@ try:
     if count != 32164 :
         raise TimeoutError
     print("representative transcripts flagged")
-    """
-    """
+ 
 ##############################################
     # start func anno
     with open ( "/Users/burkej24/Desktop/catnip/catnip_data/cataria/n_cataria.working.gene_models.functional_annotation.txt" ) as in_func :
@@ -97,8 +94,7 @@ try:
 
     # start iprscan
 
-    """
-    """
+
     go_dict = {}
     with open("/Users/burkej24/Desktop/chia_database/go_slim.txt", "r") as go_in:
         go_in.readline()
@@ -152,8 +148,7 @@ try:
             collection.update_one ( { "transcript_id" : line [0] } , { "$set" : { "model_iprscan" : ipr_list, "model_go": go_list } } )
         print(count)
         print (go_not_found, "go terms not found in go slim")
-    """
-    """
+
     #############################################################
     # add in the sequences
     cds = 0
@@ -189,10 +184,10 @@ try:
                      "motif" : line [3] , "ssr_length" : int ( line [4] ) , "scaffold" : line [0] }
             collection.insert_one ( data )
     print ("ssrs added")
-    """
+
 #########################################
 # add in the diamond analysis
-    """
+
     collection = db.genes
     with open ( "/Users/burkej24/Desktop/catnip/catnip_data/cataria/diamond_results_title.txt" , "r" ) as in_file :
         line = in_file.readline ( ).rstrip ( ).split ( "\t" )
@@ -213,7 +208,7 @@ try:
     print("diamond analysis added")
 #######################################
 # add in pfam
-    """
+
     x = 0
     with open("/Users/burkej24/Desktop/catnip/catnip_data/cataria/cataria_pfam.tsv", "r") as in_pfam:
         line = in_pfam.readline( ).rstrip( ).split ("\t")
